@@ -19,9 +19,11 @@ public class AuthenticationUserTest {
     private static ValidatableResponse authBaseUser;
     private Authentication auth;
     private static String userToken;
+    private String email;
+    private String name;
 
-    @BeforeClass
-    public static void creatBaseUser() {
+    @Before
+    public void createBaseUser() {
         usersRegistration.userRegistration(userData.baseUser());
     }
 
@@ -31,13 +33,22 @@ public class AuthenticationUserTest {
     public void successfulUserAuthentication() {
         auth = Authentication.fromRegistrationUser(userData.baseUser());
         authBaseUser = authUsers.authenticationUser(auth);
-        assertsAuth.successfulAuthentication(authBaseUser);
+        assertsAuth.successfulAuthentication(authBaseUser, name, email);
     }
 
     @Test
-    @DisplayName("Аутентификация с некорректным логином или паролем.")
-    @Description("Аутентификация с некорректным логином или паролем.")
+    @DisplayName("Аутентификация с некорректным логином")
+    @Description("Аутентификация с некорректным логином")
     public void userAuthWithIncorrectLogin() {
+        auth = Authentication.fromRegistrationUser(userData.randomUser());
+        authBaseUser = authUsers.authenticationUser(auth);
+        assertsAuth.failedAuthentication(authBaseUser);
+    }
+
+    @Test
+    @DisplayName("Аутентификация с некорректным паролем.")
+    @Description("Аутентификация с некорректным паролем.")
+    public void userAuthWithIncorrectPassword() {
         auth = Authentication.fromRegistrationUser(userData.randomUser());
         authBaseUser = authUsers.authenticationUser(auth);
         assertsAuth.failedAuthentication(authBaseUser);

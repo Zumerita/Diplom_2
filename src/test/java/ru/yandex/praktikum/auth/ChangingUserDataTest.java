@@ -4,6 +4,7 @@ import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import ru.yandex.praktikum.auth.user.AuthUsers;
@@ -14,16 +15,19 @@ import ru.yandex.praktikum.registrations.user.UsersRegistration;
 @DisplayName("Проверка изменение данных пользователя")
 public class ChangingUserDataTest {
     private final UpdateUsers updateUsers = new UpdateUsers();
-    private final AuthUsers authUsers = new AuthUsers();
-    private final UsersRegistration usersRegistration = new UsersRegistration();
+    private static final AuthUsers authUsers = new AuthUsers();
+    private static final UsersRegistration usersRegistration = new UsersRegistration();
     private final AssertsAuth assertsAuth = new AssertsAuth();
     private final UserData userData = new UserData();
     private ValidatableResponse creatingUser;
     private ValidatableResponse updateUserData;
-    private Authentication authUserData;
-    private ValidatableResponse authRandomUser;
-    private String userToken;
-    private String randomUserEmail;
+    private static Authentication authUserData;
+    private static ValidatableResponse authRandomUser;
+    private static String userToken;
+    private static String randomUserEmail;
+    private String email;
+    private String name;
+
 
     @Before
     public void creatingTestUser() {
@@ -39,7 +43,7 @@ public class ChangingUserDataTest {
         authRandomUser = authUsers.authenticationUser(authUserData);
         userToken = authRandomUser.extract().path("accessToken");
         updateUserData = updateUsers.ChangingDataUser(userToken, userData.updateUserName(randomUserEmail));
-        assertsAuth.successfulUpdateUser(updateUserData);
+        assertsAuth.successfulUpdateUser(updateUserData, name, email);
 
     }
 
@@ -52,7 +56,7 @@ public class ChangingUserDataTest {
         userToken = authRandomUser.extract().path("accessToken");
         updateUserData = updateUsers.ChangingDataUser(userToken, userData.updateUserEmail("TestExample"));
         randomUserEmail = updateUserData.extract().path("user.email");
-        assertsAuth.successfulUpdateUser(updateUserData);
+        assertsAuth.successfulUpdateUser(updateUserData, name, email);
 
     }
 
@@ -60,7 +64,7 @@ public class ChangingUserDataTest {
     @DisplayName("Изменение имени пользователя без авторизации")
     @Description("Изменение имени пользователя без авторизации")
     public void ChangingUserNameWithoutAuthorization() {
-        updateUserData = updateUsers.ChangingDataUser("", userData.updateUserName("TestExample"));
+        updateUserData = updateUsers.ChangingDataUser("", userData.updateUserName("ExampleTest@test.ru"));
         assertsAuth.failedUpdateUser(updateUserData);
     }
 
@@ -68,12 +72,12 @@ public class ChangingUserDataTest {
     @DisplayName("Изменение электронного адреса пользователя без авторизации")
     @Description("Изменение электронного адреса пользователя без авторизации")
     public void ChangingUserEmailWithoutAuthorization() {
-        updateUserData = updateUsers.ChangingDataUser("", userData.updateUserEmail("TestExample@TestExample.com"));
+        updateUserData = updateUsers.ChangingDataUser("", userData.updateUserEmail("TestExample"));
         assertsAuth.failedUpdateUser(updateUserData);
     }
 
-    @After
-    public void deleteUser() {
+    @AfterClass
+    public static void deleteUser() {
         authUserData = new Authentication(randomUserEmail, "12345678");
         authRandomUser = authUsers.authenticationUser(authUserData);
         userToken = authRandomUser.extract().path("accessToken");

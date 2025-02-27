@@ -4,6 +4,7 @@ import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Test;
 import ru.yandex.praktikum.auth.Authentication;
 import ru.yandex.praktikum.auth.user.AuthUsers;
@@ -13,15 +14,15 @@ import ru.yandex.praktikum.registrations.user.UsersRegistration;
 @DisplayName("Проверка создания пользователя")
 public class RegistrationUserTest {
     private final UserData userData = new UserData();
-    private final UsersRegistration usersRegistration = new UsersRegistration();
+    private static final UsersRegistration usersRegistration = new UsersRegistration();
     private final AssertsRegistrations assertsRegistrations = new AssertsRegistrations();
-    private final AuthUsers authUsers = new AuthUsers();
-    private ValidatableResponse authRandomUser;
-    private ValidatableResponse creatingUser;
+    private static final AuthUsers authUsers = new AuthUsers();
+    private static ValidatableResponse authRandomUser;
+    private static ValidatableResponse creatingUser;
     private ValidatableResponse creatingBaseUser;
-    private Authentication authUserData;
-    private String userToken;
-    private String randomUserEmail;
+    private static Authentication authUserData;
+    private static String userToken;
+    private static String randomUserEmail;
 
     @Test
     @DisplayName("Регистрация уникального пользователя")
@@ -65,8 +66,8 @@ public class RegistrationUserTest {
         assertsRegistrations.failedCreation(creatingUser);
     }
 
-    @After
-    public void deleteUser() {
+    @AfterClass
+    public static void deleteUser() {
         if (creatingUser.extract().path("user.email") != null) {
             randomUserEmail = creatingUser.extract().path("user.email");
             authUserData = new Authentication(randomUserEmail, "12345678");

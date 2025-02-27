@@ -2,10 +2,10 @@ package ru.yandex.praktikum.orders;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
+import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import static io.restassured.RestAssured.*;
+import org.junit.*;
 import ru.yandex.praktikum.auth.Authentication;
 import ru.yandex.praktikum.auth.user.AuthUsers;
 import ru.yandex.praktikum.helper.OrdersData;
@@ -13,23 +13,31 @@ import ru.yandex.praktikum.helper.UserData;
 import ru.yandex.praktikum.orders.creatingorders.CreateOrder;
 import ru.yandex.praktikum.registrations.user.UsersRegistration;
 
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+
 @DisplayName("Проверка создания заказов")
 public class CreateOrderTest {
     private final CreateOrder createOrder = new CreateOrder();
     private final AssertsOrders assertsOrders = new AssertsOrders();
     private final OrdersData ordersData = new OrdersData();
-    private final AuthUsers authUsers = new AuthUsers();
-    private final UsersRegistration usersRegistration = new UsersRegistration();
-    private final UserData userData = new UserData();
-    private ValidatableResponse creatingUser;
-    private ValidatableResponse creatingOrderUser;
-    private ValidatableResponse authRandomUser;
-    private Authentication authUserData;
-    private String userToken;
-    private String randomUserEmail;
+    private static final AuthUsers authUsers = new AuthUsers();
+    private static final UsersRegistration usersRegistration = new UsersRegistration();
+    private static final UserData userData = new UserData();
 
-    @Before
-    public void creatingTestUser() {
+    private static ValidatableResponse creatingUser;
+    private ValidatableResponse creatingOrderUser;
+    private static ValidatableResponse authRandomUser;
+    private static Authentication authUserData;
+    private static String userToken;
+    private static String randomUserEmail;
+
+    @BeforeClass
+    public static void creatingTestUser() {
         creatingUser = usersRegistration.userRegistration(userData.randomUser());
         randomUserEmail = creatingUser.extract().path("user.email");
     }
@@ -46,10 +54,10 @@ public class CreateOrderTest {
     }
 
     @Test
-    @DisplayName("Создание заказа без авторизацией")
-    @Description("Создание заказа без авторизацией")
+    @DisplayName("Создание заказа без авторизации")
+    @Description("Создание заказа без авторизации")
     public void creatingOrderWithoutAuthorization() {
-        creatingOrderUser = createOrder.creatingOrder(ordersData.orderBunCrater());
+        creatingOrderUser = createOrder.creatingOrder(OrdersData.orderBunCrater());
         assertsOrders.creatingOrderWithoutAuthorized(creatingOrderUser);
     }
 
@@ -57,18 +65,30 @@ public class CreateOrderTest {
     @DisplayName("Создание заказа с ингредиентами")
     @Description("Создание заказа с ингредиентами")
     public void creatingOrderWithIngredients() {
-        creatingOrderUser = createOrder.creatingOrder(ordersData.orderBunWithIngredientsImmortalBun());
+        creatingOrderUser = createOrder.creatingOrder(OrdersData.orderBunWithIngredientsImmortalBun());
         assertsOrders.creatingOrderWithIngredientsImmortalBun(creatingOrderUser);
     }
+
+
+
+    @Test
+    @DisplayName("Создаем заказ без ингредиентов")
+    @Description("Проверяем, что код ответа 400 и сообщение ошибки")
+    public void createOrderWithoutIngredients() {
+        creatingOrderUser = createOrder.creatingOrder(OrdersData.createOrderWithoutIngredients());
+        assertsOrders.creatingOrderWithoutIngredients(creatingOrderUser);
+    }
+
+
     @Test
     @DisplayName("Создание заказа с неверным хешем ингредиентов")
     @Description("Создание заказа с неверным хешем ингредиентов")
     public void creatingOrderWithIncorrectHash() {
-        creatingOrderUser = createOrder.creatingOrder(ordersData.incorrectOrderBun());
+        creatingOrderUser = createOrder.creatingOrder(OrdersData.incorrectOrderBun());
         assertsOrders.creatingOrderWithIncorrectHash(creatingOrderUser);
     }
-    @After
-    public void deleteUser() {
+    @AfterClass
+    public static void deleteUser() {
         authUserData = new Authentication(randomUserEmail, "12345678");
         authRandomUser = authUsers.authenticationUser(authUserData);
         userToken = authRandomUser.extract().path("accessToken");

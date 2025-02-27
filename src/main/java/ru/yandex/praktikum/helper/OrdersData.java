@@ -1,7 +1,10 @@
 package ru.yandex.praktikum.helper;
 
 import ru.yandex.praktikum.orders.Orders;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+
 
 public class OrdersData {
     public static Orders orderBunFluorescent() {
@@ -17,5 +20,11 @@ public class OrdersData {
     public static Orders incorrectOrderBun() {
         return new Orders(Arrays.asList("77c0c5a71d1f82001bdaaa6d"));
     }
+
+    public static Orders createOrderWithoutIngredients() {
+        return new Orders(new ArrayList<>());
+    }
 }
+
+
 
