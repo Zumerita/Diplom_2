@@ -2,7 +2,6 @@ package ru.yandex.praktikum.auth;
 
 import io.qameta.allure.Step;
 import io.restassured.response.ValidatableResponse;
-
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 

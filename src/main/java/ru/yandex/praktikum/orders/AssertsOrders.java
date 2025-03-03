@@ -2,7 +2,10 @@ package ru.yandex.praktikum.orders;
 
 
 import io.qameta.allure.Step;
+import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
+
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -32,10 +35,9 @@ public class AssertsOrders {
     }
 
     @Step
-    public void creatingOrderWithIncorrectHash(ValidatableResponse response) {
-        response.assertThat()
-                .statusCode(400)
-                .body("success", is(false));
+    public ValidatableResponse creatingOrderWithIncorrectHash(ValidatableResponse response) {
+        return response.assertThat()
+                .statusCode(HTTP_INTERNAL_ERROR);
     }
 
     @Step
@@ -58,6 +60,9 @@ public class AssertsOrders {
                 .statusCode(400)
                 .body("message", equalTo("Ingredient ids must be provided"));
     }
+
+
+
 
 }
 

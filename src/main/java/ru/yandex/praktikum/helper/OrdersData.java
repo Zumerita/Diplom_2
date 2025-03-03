@@ -1,9 +1,9 @@
 package ru.yandex.praktikum.helper;
-
 import ru.yandex.praktikum.orders.Orders;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 
 public class OrdersData {
@@ -23,6 +23,12 @@ public class OrdersData {
 
     public static Orders createOrderWithoutIngredients() {
         return new Orders(new ArrayList<>());
+    }
+
+    public static Orders incorrectHashOrderBun() {
+        Orders order = new Orders();
+        order.setIngredients(List.of("invalid_hash_1", "invalid_hash_2")); // Некорректные хеши
+        return order;
     }
 }
 

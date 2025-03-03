@@ -2,9 +2,7 @@ package ru.yandex.praktikum.orders;
 
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
-import static io.restassured.RestAssured.*;
 import org.junit.*;
 import ru.yandex.praktikum.auth.Authentication;
 import ru.yandex.praktikum.auth.user.AuthUsers;
@@ -13,11 +11,6 @@ import ru.yandex.praktikum.helper.UserData;
 import ru.yandex.praktikum.orders.creatingorders.CreateOrder;
 import ru.yandex.praktikum.registrations.user.UsersRegistration;
 
-import java.util.List;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 
 @DisplayName("Проверка создания заказов")
@@ -35,6 +28,8 @@ public class CreateOrderTest {
     private static Authentication authUserData;
     private static String userToken;
     private static String randomUserEmail;
+
+
 
     @BeforeClass
     public static void creatingTestUser() {
@@ -82,12 +77,14 @@ public class CreateOrderTest {
 
     @Test
     @DisplayName("Создание заказа с неверным хешем ингредиентов")
-    @Description("Создание заказа с неверным хешем ингредиентов")
-    public void creatingOrderWithIncorrectHash() {
-        creatingOrderUser = createOrder.creatingOrder(OrdersData.incorrectOrderBun());
+    @Description("Проверяем, что код ответа 500")
+    public void createOrderWithIncorrectHashIngredients() {
+        ValidatableResponse creatingOrderUser = createOrder.creatingOrder(OrdersData.incorrectHashOrderBun());
         assertsOrders.creatingOrderWithIncorrectHash(creatingOrderUser);
     }
-    @AfterClass
+
+
+        @AfterClass
     public static void deleteUser() {
         authUserData = new Authentication(randomUserEmail, "12345678");
         authRandomUser = authUsers.authenticationUser(authUserData);

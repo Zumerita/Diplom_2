@@ -3,7 +3,6 @@ package ru.yandex.praktikum.registrations;
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Test;
 import ru.yandex.praktikum.auth.Authentication;
